@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>線上記事本</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="#">📝 線上記事本</a>
+      <span class="tagline">免費線上記事本</span>
+      <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- 側邊欄：記事清單 -->
+    <aside class="sidebar">
+      <button id="newNoteBtn" class="btn btn-primary btn-block">＋ 新增記事</button>
+
+      <ul id="noteList" class="note-list"></ul>
+
+      <div class="sidebar-footer">
+        <span id="noteCount">共 0 篇記事</span>
+      </div>
+    </aside>
+
+    <!-- 編輯區 -->
+    <section class="editor" id="editorPane">
+      <div class="editor-toolbar">
+        <input type="text" id="noteTitle" class="title-input" placeholder="記事標題">
+        <div class="toolbar-actions">
+          <button id="saveBtn" class="btn btn-primary" title="儲存 (Ctrl+S)">💾 儲存</button>
+          <button id="deleteBtn" class="btn btn-danger" title="刪除這篇記事">🗑️ 刪除</button>
+        </div>
+      </div>
+
+      <textarea id="noteContent" aria-label="記事內容" placeholder=""></textarea>
+
+      <div class="editor-statusbar">
+        <span id="charCount">0 個字</span>
+        <span id="saveStatus"></span>
+        <span id="lastEdited"></span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>所有資料僅儲存於你的瀏覽器（localStorage），不會上傳到任何伺服器。</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+:root {
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --border: #e2e5ea;
+  --text: #2b2f36;
+  --text-muted: #7a8190;
+  --primary: #2e7d32;
+  --primary-hover: #1b5e20;
+  --danger: #c62828;
+  --danger-hover: #a51f1f;
+  --active-item: #e8f5e9;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --radius: 8px;
+}
+
+[data-theme="dark"] {
+  --bg: #1c1f24;
+  --surface: #262a31;
+  --border: #3a3f48;
+  --text: #e6e8eb;
+  --text-muted: #9aa1ad;
+  --primary: #4caf50;
+  --primary-hover: #66bb6a;
+  --active-item: #2e3b2f;
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 頂部列 ─────────────────────────── */
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tagline {
+  color: var(--text-muted);
+  font-size: 13px;
+  flex: 1;
+}
+
+/* ── 版面 ─────────────────────────── */
+.layout {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 16px auto;
+  padding: 0 20px;
+  display: flex;
+  gap: 16px;
+  min-height: 0;
+}
+
+/* ── 側邊欄 ─────────────────────────── */
+.sidebar {
+  width: 280px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  gap: 10px;
+}
+
+.note-list {
+  list-style: none;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 200px;
+  max-height: 60vh;
+}
+
+.note-item {
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.note-item:hover {
+  background: var(--bg);
+}
+
+.note-item.active {
+  background: var(--active-item);
+  border-left: 3px solid var(--primary);
+}
+
+.note-item-title {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-preview {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.sidebar-footer {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.no-result {
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* ── 編輯區 ─────────────────────────── */
+.editor {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.title-input {
+  flex: 1;
+  min-width: 160px;
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+}
+
+.title-input:focus {
+  border-color: var(--primary);
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+#noteContent {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.8;
+  background: transparent;
+  color: var(--text);
+  min-height: 400px;
+}
+
+.editor-statusbar {
+  display: flex;
+  gap: 16px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+#saveStatus {
+  color: var(--primary);
+}
+
+/* ── 按鈕 ─────────────────────────── */
+.btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--bg);
+}
+
+.btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-danger {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-ghost {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+/* ── 頁尾 ─────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── 響應式 ─────────────────────────── */
+@media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .note-list {
+    max-height: 30vh;
+  }
+
+  .tagline {
+    display: none;
+  }
+}
