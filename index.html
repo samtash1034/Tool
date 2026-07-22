@@ -3,55 +3,107 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>線上記事本</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <title>工具</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧰</text></svg>">
+  <style>
+    :root {
+      --bg: #f5f6f8;
+      --surface: #ffffff;
+      --border: #e2e5ea;
+      --text: #2b2f36;
+      --text-muted: #7a8190;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      --radius: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1f24;
+        --surface: #262a31;
+        --border: #3a3f48;
+        --text: #e6e8eb;
+        --text-muted: #9aa1ad;
+        --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 64px 20px;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 8px;
+    }
+    p.tagline {
+      color: var(--text-muted);
+      margin-bottom: 40px;
+    }
+    .tools {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 640px;
+    }
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 24px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .tool-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+    .tool-icon {
+      font-size: 2.6rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+    .tool-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .tool-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    footer {
+      margin-top: 48px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <a class="logo" href="#">📝 線上記事本</a>
-      <span class="tagline">免費線上記事本</span>
-      <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
-    </div>
-  </header>
+  <h1>🧰 工具</h1>
+  <p class="tagline">實用小工具集</p>
 
-  <main class="layout">
-    <!-- 側邊欄：記事清單 -->
-    <aside class="sidebar">
-      <button id="newNoteBtn" class="btn btn-primary btn-block">＋ 新增記事</button>
+  <div class="tools">
+    <a class="tool-card" href="記事本/index.html">
+      <span class="tool-icon">📝</span>
+      <span class="tool-name">線上記事本</span>
+      <span class="tool-desc">在瀏覽器中記錄與管理記事</span>
+    </a>
+    <a class="tool-card" href="蕃茄鬧鐘/index.html">
+      <span class="tool-icon">🍅</span>
+      <span class="tool-name">番茄鐘</span>
+      <span class="tool-desc">專注計時，提升工作效率</span>
+    </a>
+  </div>
 
-      <ul id="noteList" class="note-list"></ul>
-
-      <div class="sidebar-footer">
-        <span id="noteCount">共 0 篇記事</span>
-      </div>
-    </aside>
-
-    <!-- 編輯區 -->
-    <section class="editor" id="editorPane">
-      <div class="editor-toolbar">
-        <input type="text" id="noteTitle" class="title-input" placeholder="記事標題">
-        <div class="toolbar-actions">
-          <button id="saveBtn" class="btn btn-primary" title="儲存 (Ctrl+S)">💾 儲存</button>
-          <button id="deleteBtn" class="btn btn-danger" title="刪除這篇記事">🗑️ 刪除</button>
-        </div>
-      </div>
-
-      <textarea id="noteContent" aria-label="記事內容" placeholder="在這裡輸入內容…"></textarea>
-
-      <div class="editor-statusbar">
-        <span id="charCount">0 個字</span>
-        <span id="saveStatus"></span>
-        <span id="lastEdited"></span>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <p>所有資料僅儲存於你的瀏覽器（localStorage），不會上傳到任何伺服器。</p>
-  </footer>
-
-  <script src="script.js"></script>
+  <footer>所有資料僅儲存於你的瀏覽器，不會上傳到任何伺服器。</footer>
 </body>
 </html>

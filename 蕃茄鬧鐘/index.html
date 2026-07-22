@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>番茄鐘</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background-color: #ba4949;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background-color 0.6s ease;
+    }
+
+    /* ── Navbar ── */
+    nav {
+      width: 100%;
+      max-width: 580px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      margin-bottom: 24px;
+    }
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ── Mode tabs ── */
+    .tabs {
+      display: flex;
+      gap: 3px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 520px;
+    }
+    .tab-btn {
+      padding: 7px 14px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn.active {
+      background: rgba(0,0,0,0.18);
+      color: #fff;
+    }
+    .tab-btn:hover:not(.active) { color: #fff; }
+
+    /* ── Timer card ── */
+    .card {
+      background: rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 36px 100px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 26px;
+    }
+
+    /* ── Progress ring (enlarged) ── */
+    .ring-wrap {
+      position: relative;
+      width: 320px; height: 320px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .time-display {
+      position: absolute;
+      font-size: 6.2rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    svg.ring { transform: rotate(-90deg); }
+    .ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.15);
+      stroke-width: 7;
+    }
+    .ring-prog {
+      fill: none;
+      stroke: rgba(255,255,255,0.78);
+      stroke-width: 7;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
+    }
+
+    .mode-label {
+      font-size: 0.95rem;
+      opacity: 0.8;
+      letter-spacing: 1px;
+      margin-top: -10px;
+    }
+
+    /* ── Controls ── */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .btn-start {
+      padding: 14px 52px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      color: #ba4949;
+      cursor: pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+      transition: transform 0.1s, box-shadow 0.1s, color 0.5s;
+    }
+    .btn-start:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+    }
+    .btn-icon {
+      width: 38px; height: 38px;
+      border: none;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.28); }
+
+    /* ── Session dots ── */
+    .dots {
+      display: flex;
+      gap: 7px;
+      justify-content: center;
+    }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      transition: background 0.3s;
+    }
+    .dot.done { background: rgba(255,255,255,0.9); }
+
+    /* ── Notification banner ── */
+    #notif {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-90px);
+      background: #fff;
+      color: #333;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.4s cubic-bezier(.22,1,.36,1);
+      z-index: 999;
+      white-space: nowrap;
+    }
+    #notif.show { transform: translateX(-50%) translateY(0); }
+
+    /* ── Settings overlay ── */
+    #settingsOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s;
+      z-index: 200;
+    }
+    #settingsOverlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ── Settings panel (slides up from bottom) ── */
+    #settingsPanel {
+      position: fixed;
+      bottom: -100%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(440px, 94vw);
+      background: rgba(30,30,30,0.75);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-radius: 20px 20px 0 0;
+      padding: 28px 28px 36px;
+      transition: bottom 0.4s cubic-bezier(.22,1,.36,1);
+      z-index: 201;
+      color: #fff;
+    }
+    #settingsPanel.open { bottom: 0; }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+    .settings-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      opacity: 0.9;
+    }
+    .settings-close {
+      width: 30px; height: 30px;
+      border: none;
+      background: rgba(255,255,255,0.12);
+      border-radius: 50%;
+      color: #fff;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .settings-close:hover { background: rgba(255,255,255,0.22); }
+
+    .settings-row {
+      margin-bottom: 24px;
+    }
+    .settings-row-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+    .vol-badge {
+      background: rgba(255,255,255,0.15);
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .vol-track {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1rem;
+    }
+    input[type=range] {
+      flex: 1;
+      height: 4px;
+      border-radius: 4px;
+      accent-color: #fff;
+      cursor: pointer;
+      appearance: auto;
+    }
+
+    .btn-test {
+      width: 100%;
+      padding: 11px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: background 0.2s;
+    }
+    .btn-test:hover { background: rgba(255,255,255,0.2); }
+    .btn-test:active { background: rgba(255,255,255,0.28); }
+
+    footer {
+      margin-top: auto;
+      padding: 20px;
+      font-size: 0.75rem;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+
+  <audio id="alarm" src="alarm.mp3" preload="auto"></audio>
+  <div id="notif">🍅 時間到！</div>
+
+  <!-- Settings overlay + panel -->
+  <div id="settingsOverlay"></div>
+  <div id="settingsPanel">
+    <div class="settings-header">
+      <h2>⚙ 設置</h2>
+      <button class="settings-close" id="closeSettings">✕</button>
+    </div>
+
+    <div class="settings-row">
+      <div class="settings-row-label">
+        <span>鬧鐘音量</span>
+        <span class="vol-badge" id="volVal">80%</span>
+      </div>
+      <div class="vol-track">
+        <span>🔇</span>
+        <input type="range" id="volSlider" min="0" max="100" value="80" />
+        <span>🔊</span>
+      </div>
+    </div>
+
+    <button class="btn-test" id="testAlarm">▶ 播放測試音效</button>
+  </div>
+
+  <nav>
+    <div class="logo">🍅 番茄鐘</div>
+    <button class="btn-icon" id="btnSettings" title="設置">⚙</button>
+  </nav>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="card">
+    <div class="ring-wrap">
+      <svg class="ring" width="320" height="320" viewBox="0 0 320 320">
+        <circle class="ring-bg"   cx="160" cy="160" r="148"/>
+        <circle class="ring-prog" cx="160" cy="160" r="148" id="ringProg"/>
+      </svg>
+      <div class="time-display" id="timerDisplay">05:00</div>
+    </div>
+
+    <div class="mode-label" id="modeLabel">5 分鐘</div>
+
+    <div class="controls">
+      <button class="btn-start" id="btnStart">開始</button>
+    </div>
+
+  </div>
+
+  <footer>專注，然後好好休息 🌿</footer>
+
+  <script>
+    const MODES = [
+      { key: 's5',  label: '5 秒',    secs:  5, bg: '#2ecc71' },
+      { key: 'm5',  label: '5 分鐘',  secs:  5 * 60, bg: '#c0392b' },
+      { key: 'm10', label: '10 分鐘', secs: 10 * 60, bg: '#d35400' },
+      { key: 'm15', label: '15 分鐘', secs: 15 * 60, bg: '#4c9195' },
+      { key: 'm20', label: '20 分鐘', secs: 20 * 60, bg: '#457ca3' },
+      { key: 'm30', label: '30 分鐘', secs: 30 * 60, bg: '#7d3c98' },
+    ];
+    const CIRC = 2 * Math.PI * 148;
+
+    let modeIdx    = 0;
+    let totalSecs  = 0;
+    let remainSecs = 0;
+    let running    = false;
+    let timerId    = null;
+    let endTime    = null;  // timestamp (ms) when the countdown should hit 0
+    let volume     = 0.8;   // 0–1
+
+    const display       = document.getElementById('timerDisplay');
+    const modeLabel     = document.getElementById('modeLabel');
+    const btnStart      = document.getElementById('btnStart');
+    const notifEl       = document.getElementById('notif');
+    const ringProg      = document.getElementById('ringProg');
+    const tabsEl        = document.getElementById('tabs');
+    const alarmAudio    = document.getElementById('alarm');
+    const btnSettings   = document.getElementById('btnSettings');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const settingsOvl   = document.getElementById('settingsOverlay');
+    const closeSettings = document.getElementById('closeSettings');
+    const volSlider     = document.getElementById('volSlider');
+    const volVal        = document.getElementById('volVal');
+    const testAlarmBtn  = document.getElementById('testAlarm');
+
+    // ── Tabs ─────────────────────────────────────────────
+    MODES.forEach((m, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
+      btn.textContent = m.label;
+      btn.addEventListener('click', () => setMode(i));
+      tabsEl.appendChild(btn);
+    });
+
+    // ── Click sound ──────────────────────────────────────
+    function playClick() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        const t = ctx.currentTime;
+        gain.gain.setValueAtTime(0.18 * volume, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+        osc.start(t); osc.stop(t + 0.08);
+      } catch(e) {}
+    }
+
+    // ── Helpers ───────────────────────────────────────────
+    function fmt(s) {
+      return String(Math.floor(s / 60)).padStart(2, '0') + ':' +
+             String(s % 60).padStart(2, '0');
+    }
+    function updateRing() {
+      const frac = totalSecs > 0 ? remainSecs / totalSecs : 1;
+      ringProg.style.strokeDasharray  = CIRC;
+      ringProg.style.strokeDashoffset = CIRC * (1 - frac);
+    }
+    function clearTimer() {
+      if (timerId) { clearInterval(timerId); timerId = null; }
+    }
+
+    // ── Mode ─────────────────────────────────────────────
+    function setMode(idx) {
+      clearTimer();
+      modeIdx = idx; running = false;
+      btnStart.textContent = '開始';
+      const m = MODES[idx];
+      totalSecs = remainSecs = m.secs;
+      document.body.style.backgroundColor = m.bg;
+      btnStart.style.color = m.bg;
+      modeLabel.textContent = m.label;
+      display.textContent   = fmt(remainSecs);
+      document.title        = `${fmt(remainSecs)} — 番茄鐘`;
+      updateRing();
+      tabsEl.querySelectorAll('.tab-btn').forEach((b, i) =>
+        b.classList.toggle('active', i === idx));
+    }
+
+    // ── Audio ─────────────────────────────────────────────
+    function playAlarm() {
+      alarmAudio.volume = volume;
+      alarmAudio.currentTime = 0;
+      alarmAudio.play()
+        .then(() => {
+          let count = 1;
+          alarmAudio.onended = () => {
+            if (count < 2) { count++; alarmAudio.currentTime = 0; alarmAudio.play(); }
+            else alarmAudio.onended = null;
+          };
+        })
+        .catch(() => playWebAudio());
+    }
+    function playWebAudio() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const notes = [523, 659, 784, 1047];
+        [0, 1].forEach(round => {
+          const offset = round * (notes.length * 0.25 + 0.3);
+          notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+            const t = ctx.currentTime + offset + i * 0.25;
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(0.35 * volume, t + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+            osc.start(t); osc.stop(t + 0.5);
+          });
+        });
+      } catch(e) {}
+    }
+
+    // ── Notification ─────────────────────────────────────
+    function showNotif(msg) {
+      notifEl.textContent = msg;
+      notifEl.classList.add('show');
+      if (Notification.permission === 'granted')
+        new Notification('番茄鐘', { body: msg });
+      setTimeout(() => notifEl.classList.remove('show'), 4000);
+    }
+
+    // ── Tick ─────────────────────────────────────────────
+    // Derives remaining time from the wall-clock end time rather than just
+    // decrementing by 1 each call — setInterval gets throttled by browsers
+    // when the tab/window is backgrounded, so counting on tick frequency
+    // alone makes the display appear to freeze until it catches up.
+    function tick() {
+      remainSecs = Math.max(0, Math.round((endTime - Date.now()) / 1000));
+      display.textContent = fmt(remainSecs);
+      document.title = `${fmt(remainSecs)} — 番茄鐘`;
+      updateRing();
+
+      if (remainSecs <= 0) {
+        clearTimer(); running = false;
+        btnStart.textContent = '開始';
+        playAlarm();
+        remainSecs = totalSecs;
+        display.textContent = fmt(remainSecs);
+        document.title = `${fmt(remainSecs)} — 番茄鐘`;
+        updateRing();
+      }
+    }
+
+    // ── Settings panel ────────────────────────────────────
+    function openSettings() {
+      settingsPanel.classList.add('open');
+      settingsOvl.classList.add('open');
+    }
+    function closeSettingsFn() {
+      settingsPanel.classList.remove('open');
+      settingsOvl.classList.remove('open');
+    }
+
+    btnSettings.addEventListener('click', openSettings);
+    closeSettings.addEventListener('click', closeSettingsFn);
+    settingsOvl.addEventListener('click', closeSettingsFn);
+
+    volSlider.addEventListener('input', () => {
+      volume = volSlider.value / 100;
+      volVal.textContent = `${volSlider.value}%`;
+    });
+
+    testAlarmBtn.addEventListener('click', () => {
+      testAlarmBtn.textContent = '🔔 播放中…';
+      playAlarm();
+      setTimeout(() => { testAlarmBtn.textContent = '▶ 播放測試音效'; }, 1400);
+    });
+
+    // ── Main buttons ─────────────────────────────────────
+    btnStart.addEventListener('click', () => {
+      playClick();
+      if (running) {
+        clearTimer(); running = false; btnStart.textContent = '開始';
+      } else {
+        endTime = Date.now() + remainSecs * 1000;
+        timerId = setInterval(tick, 250); running = true; btnStart.textContent = '暫停';
+      }
+    });
+
+    // Force an immediate correction when the tab regains focus, instead of
+    // waiting for the next (possibly throttled) interval tick.
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && running) tick();
+    });
+
+    // ── Init ─────────────────────────────────────────────
+    setMode(0);
+  </script>
+</body>
+</html>
