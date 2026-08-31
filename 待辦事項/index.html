@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>待辦事項</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" href="#">✅ 待辦事項</a>
+      <span class="tagline">簡單好用的待辦清單</span>
+      <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <form id="addForm" class="add-form">
+        <input type="text" id="todoInput" class="todo-input" placeholder="輸入待辦事項後按 Enter 新增…" maxlength="200" autocomplete="off">
+        <button type="submit" class="btn btn-primary">＋ 新增</button>
+      </form>
+
+      <div class="filters">
+        <span class="filter-label">全部</span>
+        <button id="clearCompletedBtn" class="btn btn-ghost-text">清除已完成</button>
+      </div>
+
+      <ul id="todoList" class="todo-list"></ul>
+
+      <div class="panel-footer">
+        <span id="itemsLeft">尚有 0 項待辦</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>所有資料僅儲存於你的瀏覽器（localStorage），不會上傳到任何伺服器。</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
