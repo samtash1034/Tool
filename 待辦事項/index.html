@@ -11,7 +11,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <a class="logo" href="#">✅ 待辦事項</a>
-      <span class="tagline">簡單好用的待辦清單</span>
+      <span class="tagline">依優先順序分成三區</span>
       <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
     </div>
   </header>
@@ -20,15 +20,46 @@
     <section class="panel">
       <form id="addForm" class="add-form">
         <input type="text" id="todoInput" class="todo-input" placeholder="輸入待辦事項後按 Enter 新增…" maxlength="200" autocomplete="off">
+        <select id="levelSelect" class="level-select" title="選擇區塊">
+          <option value="high">🔥 最緊急</option>
+          <option value="normal" selected>普通</option>
+          <option value="low">不重要</option>
+        </select>
         <button type="submit" class="btn btn-primary">＋ 新增</button>
       </form>
 
       <div class="filters">
-        <span class="filter-label">全部</span>
-        <button id="clearCompletedBtn" class="btn btn-ghost-text">清除已完成</button>
+        <span class="filter-label">整列任一處都可拖曳搬移區塊 · 雙擊文字可編輯 · ✕ 刪除</span>
       </div>
 
-      <ul id="todoList" class="todo-list"></ul>
+      <div class="board">
+        <div class="column high" data-level="high">
+          <div class="column-head">
+            <span class="column-title">🔥 最緊急</span>
+            <span class="column-count" data-count="high">0</span>
+          </div>
+          <p class="column-desc">今天就要處理，有 deadline 或有人在等</p>
+          <ul class="todo-list" data-list="high"></ul>
+        </div>
+
+        <div class="column normal" data-level="normal">
+          <div class="column-head">
+            <span class="column-title">普通</span>
+            <span class="column-count" data-count="normal">0</span>
+          </div>
+          <p class="column-desc">該做但不急，排時間慢慢推進</p>
+          <ul class="todo-list" data-list="normal"></ul>
+        </div>
+
+        <div class="column low" data-level="low">
+          <div class="column-head">
+            <span class="column-title">不重要</span>
+            <span class="column-count" data-count="low">0</span>
+          </div>
+          <p class="column-desc">有空再說，放著也不會怎樣</p>
+          <ul class="todo-list" data-list="low"></ul>
+        </div>
+      </div>
 
       <div class="panel-footer">
         <span id="itemsLeft">尚有 0 項待辦</span>
