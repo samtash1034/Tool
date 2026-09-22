@@ -1,19 +1,20 @@
-/* 待辦事項 — 最緊急 / 普通 / 不重要 三區，資料儲存於 localStorage */
+/* 待辦事項 — 最緊急 / 普通 / 不重要 三區 + 工作區，資料儲存於 localStorage */
 (function () {
   "use strict";
 
   const STORAGE_KEY = "todos.items";
   const THEME_KEY = "todos.theme";
 
-  const LEVELS = ["high", "normal", "low"];
+  const LEVELS = ["high", "normal", "low", "work"];
   const DEFAULT_LEVEL = "normal";
   const LEVEL_LABEL = {
     high: "🔥 最緊急",
     normal: "普通",
     low: "不重要",
+    work: "💼 工作區",
   };
   // 項目上的小下拉用短標籤，才不會把文字空間吃掉
-  const LEVEL_SHORT = { high: "🔥", normal: "普", low: "低" };
+  const LEVEL_SHORT = { high: "🔥", normal: "普", low: "低", work: "💼" };
   // 舊版四象限資料的對應
   const LEGACY_MAP = { q1: "high", q2: "normal", q3: "normal", q4: "low" };
 

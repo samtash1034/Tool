@@ -11,7 +11,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <a class="logo" href="#">✅ 待辦事項</a>
-      <span class="tagline">依優先順序分成三區</span>
+      <span class="tagline">依優先順序分成三區，另有工作區</span>
       <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
     </div>
   </header>
@@ -21,9 +21,10 @@
       <form id="addForm" class="add-form">
         <input type="text" id="todoInput" class="todo-input" placeholder="輸入待辦事項後按 Enter 新增…" maxlength="200" autocomplete="off">
         <select id="levelSelect" class="level-select" title="選擇區塊">
-          <option value="high">🔥 最緊急</option>
-          <option value="normal" selected>普通</option>
+          <option value="high" selected>🔥 最緊急</option>
+          <option value="normal">普通</option>
           <option value="low">不重要</option>
+          <option value="work">💼 工作區</option>
         </select>
         <button type="submit" class="btn btn-primary">＋ 新增</button>
       </form>
@@ -58,6 +59,15 @@
           </div>
           <p class="column-desc">有空再說，放著也不會怎樣</p>
           <ul class="todo-list" data-list="low"></ul>
+        </div>
+
+        <div class="column work" data-level="work">
+          <div class="column-head">
+            <span class="column-title">💼 工作區</span>
+            <span class="column-count" data-count="work">0</span>
+          </div>
+          <p class="column-desc">工作相關的事項，不分等級</p>
+          <ul class="todo-list" data-list="work"></ul>
         </div>
       </div>
 

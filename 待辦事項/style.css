@@ -15,6 +15,7 @@
   --high: #d32f2f;
   --normal: #1976d2;
   --low: #78849a;
+  --work: #2e7d32;
   --col-tint: 8%;
 }
 
@@ -32,6 +33,7 @@
   --high: #ef5350;
   --normal: #4a9eff;
   --low: #9aa5b5;
+  --work: #66bb6a;
   --col-tint: 14%;
 }
 
@@ -177,13 +179,20 @@ body {
   flex-direction: column;
   gap: 4px;
   /* 至少這麼高，內容多了就自己往下長 */
-  min-height: 520px;
+  min-height: 416px;
   transition: box-shadow 0.15s;
 }
 
 .column.high { --c: var(--high); }
 .column.normal { --c: var(--normal); }
 .column.low { --c: var(--low); }
+.column.work { --c: var(--work); }
+
+/* 工作區不分等級，橫跨整排放在三區下方 */
+.column.work {
+  grid-column: 1 / -1;
+  min-height: 338px;
+}
 
 .column.drag-over {
   box-shadow: inset 0 0 0 2px var(--c);
