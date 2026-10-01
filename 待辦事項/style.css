@@ -16,6 +16,7 @@
   --normal: #1976d2;
   --low: #78849a;
   --work: #2e7d32;
+  --daily: #ef6c00;
   --col-tint: 8%;
 }
 
@@ -34,6 +35,7 @@
   --normal: #4a9eff;
   --low: #9aa5b5;
   --work: #66bb6a;
+  --daily: #ffa726;
   --col-tint: 14%;
 }
 
@@ -187,11 +189,18 @@ body {
 .column.normal { --c: var(--normal); }
 .column.low { --c: var(--low); }
 .column.work { --c: var(--work); }
+.column.daily { --c: var(--daily); }
 
 /* 工作區不分等級，橫跨整排放在三區下方 */
 .column.work {
   grid-column: 1 / -1;
   min-height: 338px;
+}
+
+/* 每日清單同樣橫跨整排，放在最上面 */
+.column.daily {
+  grid-column: 1 / -1;
+  min-height: 0;
 }
 
 .column.drag-over {

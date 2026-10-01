@@ -1,20 +1,21 @@
-/* 待辦事項 — 最緊急 / 普通 / 不重要 三區 + 工作區，資料儲存於 localStorage */
+/* 待辦事項 — 最緊急 / 普通 / 不重要 三區 + 工作區 + 每日清單，資料儲存於 localStorage */
 (function () {
   "use strict";
 
   const STORAGE_KEY = "todos.items";
   const THEME_KEY = "todos.theme";
 
-  const LEVELS = ["high", "normal", "low", "work"];
+  const LEVELS = ["high", "normal", "low", "work", "daily"];
   const DEFAULT_LEVEL = "normal";
   const LEVEL_LABEL = {
     high: "🔥 最緊急",
     normal: "普通",
     low: "不重要",
     work: "💼 工作區",
+    daily: "📅 每日清單",
   };
   // 項目上的小下拉用短標籤，才不會把文字空間吃掉
-  const LEVEL_SHORT = { high: "🔥", normal: "普", low: "低", work: "💼" };
+  const LEVEL_SHORT = { high: "🔥", normal: "普", low: "低", work: "💼", daily: "📅" };
   // 舊版四象限資料的對應
   const LEGACY_MAP = { q1: "high", q2: "normal", q3: "normal", q4: "low" };
 
@@ -197,7 +198,8 @@
       counts[lv].textContent = items.length;
     });
 
-    itemsLeft.textContent = `共 ${todos.length} 項待辦`;
+    const dailyCount = todos.filter((t) => t.level === "daily").length;
+    itemsLeft.textContent = `共 ${todos.length - dailyCount} 項待辦`;
   }
 
   // ── 拖放 ──────────────────────────

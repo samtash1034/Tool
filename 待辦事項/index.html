@@ -11,7 +11,7 @@
   <header class="topbar">
     <div class="topbar-inner">
       <a class="logo" href="#">✅ 待辦事項</a>
-      <span class="tagline">依優先順序分成三區，另有工作區</span>
+      <span class="tagline">依優先順序分成三區，另有每日清單與工作區</span>
       <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
     </div>
   </header>
@@ -25,6 +25,7 @@
           <option value="normal">普通</option>
           <option value="low">不重要</option>
           <option value="work">💼 工作區</option>
+          <option value="daily">📅 每日清單</option>
         </select>
         <button type="submit" class="btn btn-primary">＋ 新增</button>
       </form>
@@ -34,6 +35,15 @@
       </div>
 
       <div class="board">
+        <div class="column daily" data-level="daily">
+          <div class="column-head">
+            <span class="column-title">📅 每日清單</span>
+            <span class="column-count" data-count="daily">0</span>
+          </div>
+          <p class="column-desc">每天都要做的例行事項</p>
+          <ul class="todo-list" data-list="daily"></ul>
+        </div>
+
         <div class="column high" data-level="high">
           <div class="column-head">
             <span class="column-title">🔥 最緊急</span>
