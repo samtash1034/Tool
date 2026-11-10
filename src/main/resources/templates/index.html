@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -92,23 +92,23 @@
   <p class="tagline">實用小工具集</p>
 
   <div class="tools">
-    <a class="tool-card" href="記事本/index.html">
+    <a class="tool-card" th:href="@{/notepad}">
       <span class="tool-icon">📝</span>
       <span class="tool-name">線上記事本</span>
       <span class="tool-desc">在瀏覽器中記錄與管理記事</span>
     </a>
-    <a class="tool-card" href="蕃茄鬧鐘/index.html">
+    <a class="tool-card" th:href="@{/pomodoro}">
       <span class="tool-icon">🍅</span>
       <span class="tool-name">番茄鐘</span>
       <span class="tool-desc">專注計時，提升工作效率</span>
     </a>
-    <a class="tool-card" href="待辦事項/index.html">
+    <a class="tool-card" th:href="@{/todo}">
       <span class="tool-icon">✅</span>
       <span class="tool-name">待辦事項</span>
       <span class="tool-desc">新增、勾選、管理你的待辦清單</span>
     </a>
   </div>
 
-  <footer>所有資料僅儲存於你的瀏覽器，不會上傳到任何伺服器。</footer>
+  <footer>記事本與待辦事項的資料儲存於伺服器資料庫。</footer>
 </body>
 </html>

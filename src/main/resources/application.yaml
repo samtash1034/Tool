@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: Tool
+  config:
+    # 本機機密設定（DB 密碼），已列入 .gitignore；部署時改用環境變數 DB_PASSWORD
+    import: optional:classpath:application-local.yaml
+  datasource:
+    # 與 Fuden 共用 Railway MySQL，使用獨立 schema「tool」（不存在會自動建立）。
+    # 本機連對外位址；部署在 Railway 內部可設 DB_HOST=mysql.railway.internal、DB_PORT=3306
+    url: jdbc:mysql://${DB_HOST:zephyr.proxy.rlwy.net}:${DB_PORT:35985}/${DB_SCHEMA:tool}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Taipei&characterEncoding=UTF-8
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+
+server:
+  # 本機預設 8086（Fuden 用 8085）；部署平台以 PORT 環境變數指定
+  port: ${PORT:8086}

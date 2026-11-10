@@ -1,8 +1,8 @@
-/* 線上記事本 — 資料儲存於 localStorage */
+/* 線上記事本 — 資料儲存於伺服器（/api/notes） */
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "notepad.notes";
+  const API = "/api/notes";
   const THEME_KEY = "notepad.theme";
 
   // DOM 元素
@@ -19,21 +19,37 @@
   const lastEdited = document.getElementById("lastEdited");
   const themeToggle = document.getElementById("themeToggle");
 
-  let notes = loadNotes();
+  let notes = [];
   let activeId = null;
   let autoSaveTimer = null;
 
-  // ── 資料存取 ──────────────────────────
-  function loadNotes() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    } catch {
-      return [];
-    }
+  // ── 資料存取（REST API） ──────────────────────────
+  async function api(method, url, body) {
+    const res = await fetch(url, {
+      method,
+      headers: body !== undefined ? { "Content-Type": "application/json" } : {},
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+    if (!res.ok) throw new Error(`${method} ${url} 失敗（${res.status}）`);
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
   }
 
-  function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  // 伺服器回傳的時間是字串，轉成毫秒方便排序與顯示
+  function normalize(n) {
+    return { ...n, updatedAt: new Date(n.updatedAt).getTime() };
+  }
+
+  async function loadNotes() {
+    try {
+      notes = (await api("GET", API)).map(normalize);
+    } catch (err) {
+      console.error(err);
+      noteCount.textContent = "⚠️ 無法連線到伺服器";
+      return;
+    }
+    if (notes.length) activeId = notes[0].id;
+    render();
   }
 
   function getActiveNote() {
@@ -41,42 +57,65 @@
   }
 
   // ── 記事操作 ──────────────────────────
-  function createNote() {
-    const note = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      title: "",
-      content: "",
-      updatedAt: Date.now(),
-    };
-    notes.unshift(note);
-    activeId = note.id;
-    persist();
-    render();
-    titleInput.focus();
+  async function createNote() {
+    await saveActiveNote(true);
+    try {
+      const note = normalize(await api("POST", API));
+      notes.unshift(note);
+      activeId = note.id;
+      render();
+      titleInput.focus();
+    } catch (err) {
+      console.error(err);
+      flashSaveStatus("⚠️ 新增失敗");
+    }
   }
 
-  function saveActiveNote(silent) {
+  // 只有內容有變動才送到伺服器；回傳 true 表示已儲存（或無需儲存）
+  async function saveActiveNote(silent) {
+    clearTimeout(autoSaveTimer);
     const note = getActiveNote();
-    if (!note) return;
-    note.title = titleInput.value;
-    note.content = contentInput.value;
+    if (!note) return true;
+    const title = titleInput.value;
+    const content = contentInput.value;
+    if (title === note.title && content === note.content) {
+      if (!silent) flashSaveStatus("✓ 已儲存");
+      return true;
+    }
+    note.title = title;
+    note.content = content;
     note.updatedAt = Date.now();
     // 依更新時間排序（最新在前）
     notes.sort((a, b) => b.updatedAt - a.updatedAt);
-    persist();
     renderList();
     updateStatusbar();
-    if (!silent) flashSaveStatus("✓ 已儲存");
+    try {
+      const saved = normalize(await api("PUT", `${API}/${note.id}`, { title, content }));
+      note.updatedAt = saved.updatedAt;
+      if (note.id === activeId) updateStatusbar();
+      if (!silent) flashSaveStatus("✓ 已儲存");
+      return true;
+    } catch (err) {
+      console.error(err);
+      flashSaveStatus("⚠️ 儲存失敗");
+      return false;
+    }
   }
 
-  function deleteActiveNote() {
+  async function deleteActiveNote() {
     const note = getActiveNote();
     if (!note) return;
     const name = note.title.trim() || "（未命名記事）";
     if (!confirm(`確定要刪除「${name}」嗎？此動作無法復原。`)) return;
-    notes = notes.filter((n) => n.id !== activeId);
+    try {
+      await api("DELETE", `${API}/${note.id}`);
+    } catch (err) {
+      console.error(err);
+      flashSaveStatus("⚠️ 刪除失敗");
+      return;
+    }
+    notes = notes.filter((n) => n.id !== note.id);
     activeId = notes.length ? notes[0].id : null;
-    persist();
     render();
   }
 
@@ -155,9 +194,8 @@
   // ── 自動儲存 ──────────────────────────
   function scheduleAutoSave() {
     clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-      saveActiveNote(true);
-      flashSaveStatus("✓ 已自動儲存");
+    autoSaveTimer = setTimeout(async () => {
+      if (await saveActiveNote(true)) flashSaveStatus("✓ 已自動儲存");
     }, 800);
   }
 
@@ -196,6 +234,18 @@
     (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   applyTheme(savedTheme);
 
-  if (notes.length) activeId = notes[0].id;
+  // 離開頁面前把尚未送出的自動儲存補送（keepalive 讓請求在頁面關閉後仍能完成）
+  window.addEventListener("pagehide", () => {
+    const note = getActiveNote();
+    if (!note || (titleInput.value === note.title && contentInput.value === note.content)) return;
+    fetch(`${API}/${note.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: titleInput.value, content: contentInput.value }),
+      keepalive: true,
+    });
+  });
+
   render();
+  loadNotes();
 })();

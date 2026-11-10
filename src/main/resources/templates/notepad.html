@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>線上記事本</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" th:href="@{/notepad/style.css}">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="logo" href="#">📝 線上記事本</a>
+      <a class="logo" th:href="@{/}" title="回工具首頁">📝 線上記事本</a>
       <span class="tagline">免費線上記事本</span>
       <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
     </div>
@@ -49,9 +49,9 @@
   </main>
 
   <footer class="footer">
-    <p>所有資料僅儲存於你的瀏覽器（localStorage），不會上傳到任何伺服器。</p>
+    <p>資料儲存於伺服器資料庫，換裝置也能看到同一份內容。</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script th:src="@{/notepad/script.js}"></script>
 </body>
 </html>

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>待辦事項</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✅</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" th:href="@{/todo/style.css}">
 </head>
 <body>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="logo" href="#">✅ 待辦事項</a>
+      <a class="logo" th:href="@{/}" title="回工具首頁">✅ 待辦事項</a>
       <span class="tagline">依優先順序分成三區，另有每日清單與工作區</span>
       <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
     </div>
@@ -88,9 +88,9 @@
   </main>
 
   <footer class="footer">
-    <p>所有資料僅儲存於你的瀏覽器（localStorage），不會上傳到任何伺服器。</p>
+    <p>資料儲存於伺服器資料庫，換裝置也能看到同一份內容。</p>
   </footer>
 
-  <script src="script.js"></script>
+  <script th:src="@{/todo/script.js}"></script>
 </body>
 </html>

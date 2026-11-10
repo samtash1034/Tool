@@ -1,8 +1,8 @@
-/* 待辦事項 — 最緊急 / 普通 / 不重要 三區 + 工作區 + 每日清單，資料儲存於 localStorage */
+/* 待辦事項 — 最緊急 / 普通 / 不重要 三區 + 工作區 + 每日清單，資料儲存於伺服器（/api/todos） */
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "todos.items";
+  const API = "/api/todos";
   const THEME_KEY = "todos.theme";
 
   const LEVELS = ["high", "normal", "low", "work", "daily"];
@@ -16,8 +16,6 @@
   };
   // 項目上的小下拉用短標籤，才不會把文字空間吃掉
   const LEVEL_SHORT = { high: "🔥", normal: "普", low: "低", work: "💼", daily: "📅" };
-  // 舊版四象限資料的對應
-  const LEGACY_MAP = { q1: "high", q2: "normal", q3: "normal", q4: "low" };
 
   // DOM 元素
   const addForm = document.getElementById("addForm");
@@ -32,46 +30,63 @@
     counts[lv] = document.querySelector(`[data-count="${lv}"]`);
   });
 
-  let todos = loadTodos();
+  let todos = [];
 
-  // ── 資料存取 ──────────────────────────
-  function loadTodos() {
-    let items;
-    try {
-      items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-    } catch {
-      items = [];
-    }
-    return items.map((t) => {
-      const { quadrant, completed, ...rest } = t;
-      let level = t.level;
-      if (!LEVELS.includes(level)) level = LEGACY_MAP[quadrant] || DEFAULT_LEVEL;
-      return { ...rest, level };
+  // ── 資料存取（REST API） ──────────────────────────
+  async function api(method, url, body) {
+    const res = await fetch(url, {
+      method,
+      headers: body !== undefined ? { "Content-Type": "application/json" } : {},
+      body: body !== undefined ? JSON.stringify(body) : undefined,
     });
+    if (!res.ok) throw new Error(`${method} ${url} 失敗（${res.status}）`);
+    const text = await res.text();
+    return text ? JSON.parse(text) : null;
   }
 
-  function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  // id 一律轉字串，才能和 dataset / dataTransfer 取出的值比對
+  function normalize(t) {
+    return { ...t, id: String(t.id) };
+  }
+
+  // 發生錯誤時提示並以伺服器資料為準重新載入
+  function fail(err) {
+    console.error(err);
+    alert("儲存失敗，請稍後再試。\n" + err.message);
+    loadTodos();
+  }
+
+  async function loadTodos() {
+    try {
+      todos = (await api("GET", API)).map(normalize);
+    } catch (err) {
+      console.error(err);
+      itemsLeft.textContent = "⚠️ 無法連線到伺服器";
+      return;
+    }
+    render();
   }
 
   // ── 待辦操作 ──────────────────────────
-  function addTodo(text, level) {
+  async function addTodo(text, level) {
     const trimmed = text.trim();
     if (!trimmed) return;
-    todos.unshift({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      text: trimmed,
-      createdAt: Date.now(),
-      level: LEVELS.includes(level) ? level : DEFAULT_LEVEL,
-    });
-    persist();
-    render();
+    try {
+      const created = await api("POST", API, {
+        text: trimmed,
+        level: LEVELS.includes(level) ? level : DEFAULT_LEVEL,
+      });
+      todos.unshift(normalize(created));
+      render();
+    } catch (err) {
+      fail(err);
+    }
   }
 
   function deleteTodo(id) {
     todos = todos.filter((t) => t.id !== id);
-    persist();
     render();
+    api("DELETE", `${API}/${id}`).catch(fail);
   }
 
   function editTodo(id, text) {
@@ -82,9 +97,13 @@
       deleteTodo(id);
       return;
     }
+    if (trimmed === todo.text) {
+      render();
+      return;
+    }
     todo.text = trimmed;
-    persist();
     render();
+    api("PATCH", `${API}/${id}`, { text: trimmed }).catch(fail);
   }
 
   // 搬到指定區塊；beforeId 有值時插在該項目之前，否則放到最後
@@ -102,8 +121,8 @@
       if (at !== -1) target = at;
     }
     todos.splice(target, 0, todo);
-    persist();
     render();
+    api("PUT", `${API}/order`, todos.map((t) => ({ id: Number(t.id), level: t.level }))).catch(fail);
   }
 
   // ── 畫面渲染 ──────────────────────────
@@ -259,6 +278,6 @@
     (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
   applyTheme(savedTheme);
 
-  persist();
   render();
+  loadTodos();
 })();
