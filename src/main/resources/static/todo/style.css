@@ -257,11 +257,14 @@ body {
 
 .column-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   align-items: center;
   gap: 8px;
 }
 
-.clear-btn {
+.clear-btn,
+.copy-btn {
   font-size: 12px;
   font-family: inherit;
   color: var(--text-muted);
@@ -279,7 +282,14 @@ body {
   border-color: var(--danger);
 }
 
-.clear-btn:disabled {
+.copy-btn:hover:not(:disabled) {
+  color: #fff;
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.clear-btn:disabled,
+.copy-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

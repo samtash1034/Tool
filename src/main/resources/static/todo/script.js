@@ -36,6 +36,8 @@
   const itemsLeft = document.getElementById("itemsLeft");
   const themeToggle = document.getElementById("themeToggle");
   const clearReport = document.getElementById("clearReport");
+  const copyReport = document.getElementById("copyReport");
+  const copyReportStatus = document.getElementById("copyReportStatus");
   const lists = {};
   const counts = {};
   LEVELS.forEach((lv) => {
@@ -127,6 +129,36 @@
     todos = todos.filter((t) => t.level !== level);
     render();
     api("DELETE", `${API}?level=${encodeURIComponent(level)}`).catch(fail);
+  }
+
+  async function copyReportText() {
+    const text = todos.filter((t) => t.level === "report").map((t) => t.text).join("\n");
+    if (!text) return;
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        // 區網 HTTP 頁面沒有 Clipboard API，使用文字選取方式複製。
+        const input = document.createElement("textarea");
+        input.value = text;
+        input.style.position = "fixed";
+        input.style.opacity = "0";
+        const focused = document.activeElement;
+        document.body.appendChild(input);
+        try {
+          input.select();
+          if (!document.execCommand("copy")) throw new Error("複製失敗");
+        } finally {
+          input.remove();
+          if (focused) focused.focus();
+        }
+      }
+      copyReportStatus.textContent = "✓ 已複製全部日報內容";
+    } catch (err) {
+      console.error(err);
+      copyReportStatus.textContent = "複製失敗，請確認瀏覽器的剪貼簿權限後重試。";
+    }
+    copyReportStatus.hidden = false;
   }
 
   // 搬到指定區塊；beforeId 有值時插在該項目之前，否則放到最後
@@ -241,6 +273,8 @@
     });
 
     if (clearReport) clearReport.disabled = !todos.some((t) => t.level === "report");
+    if (copyReport) copyReport.disabled = !todos.some((t) => t.level === "report");
+    if (copyReportStatus) copyReportStatus.hidden = true;
 
     // 只算本頁的區塊；每日清單是例行事項，不算進待辦數
     const pending = todos.filter((t) => LEVELS.includes(t.level) && t.level !== "daily").length;
@@ -294,6 +328,7 @@
   });
 
   if (clearReport) clearReport.addEventListener("click", () => clearLevel("report"));
+  if (copyReport) copyReport.addEventListener("click", copyReportText);
 
   themeToggle.addEventListener("click", () => {
     const current = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
