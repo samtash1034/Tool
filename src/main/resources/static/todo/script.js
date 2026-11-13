@@ -132,12 +132,24 @@
   }
 
   async function copyReportText() {
+    copyReportStatus.hidden = true;
     const text = todos.filter((t) => t.level === "report").map((t) => t.text).join("\n");
-    if (!text) return;
+    if (!text) {
+      copyReportStatus.textContent = "目前沒有可複製的日報內容。";
+      copyReportStatus.hidden = false;
+      return;
+    }
     try {
+      let copied = false;
       if (navigator.clipboard && window.isSecureContext) {
-        await navigator.clipboard.writeText(text);
-      } else {
+        try {
+          await navigator.clipboard.writeText(text);
+          copied = true;
+        } catch (err) {
+          // 剪貼簿權限被拒絕時，繼續嘗試文字選取方式。
+        }
+      }
+      if (!copied) {
         // 區網 HTTP 頁面沒有 Clipboard API，使用文字選取方式複製。
         const input = document.createElement("textarea");
         input.value = text;
@@ -153,12 +165,11 @@
           if (focused) focused.focus();
         }
       }
-      copyReportStatus.textContent = "✓ 已複製全部日報內容";
     } catch (err) {
       console.error(err);
       copyReportStatus.textContent = "複製失敗，請確認瀏覽器的剪貼簿權限後重試。";
+      copyReportStatus.hidden = false;
     }
-    copyReportStatus.hidden = false;
   }
 
   // 搬到指定區塊；beforeId 有值時插在該項目之前，否則放到最後
@@ -273,7 +284,6 @@
     });
 
     if (clearReport) clearReport.disabled = !todos.some((t) => t.level === "report");
-    if (copyReport) copyReport.disabled = !todos.some((t) => t.level === "report");
     if (copyReportStatus) copyReportStatus.hidden = true;
 
     // 只算本頁的區塊；每日清單是例行事項，不算進待辦數
