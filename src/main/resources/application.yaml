@@ -9,7 +9,7 @@ spring:
     # 本機連對外位址；部署在 Railway 內部可設 DB_HOST=mysql.railway.internal、DB_PORT=3306
     url: jdbc:mysql://${DB_HOST:zephyr.proxy.rlwy.net}:${DB_PORT:35985}/${DB_SCHEMA:tool}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Taipei&characterEncoding=UTF-8
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:UEmBVsdjKSeCsDBxpGfrGfyvKUKZsLPC}
     driver-class-name: com.mysql.cj.jdbc.Driver
   sql:
     init:
