@@ -1,21 +1,33 @@
-/* 待辦事項 — 最緊急 / 普通 / 不重要 三區 + 工作區 + 每日清單，資料儲存於伺服器（/api/todos） */
+/* 待辦事項 / 工作待辦 共用 — 資料儲存於伺服器（/api/todos）
+ * 頁面上有哪些 [data-list] 區塊就顯示哪些：
+ *   /todo       最緊急 / 普通 / 不重要 + 工作區 + 每日清單
+ *   /work-todo  日報 / 股票（緊急、普通）/ 商城（緊急、普通）/ 其他 */
 (function () {
   "use strict";
 
   const API = "/api/todos";
   const THEME_KEY = "todos.theme";
 
-  const LEVELS = ["high", "normal", "low", "work", "daily"];
-  const DEFAULT_LEVEL = "normal";
+  const LEVELS = [...document.querySelectorAll("[data-list]")].map((el) => el.dataset.list);
+  const DEFAULT_LEVEL = LEVELS.includes("normal") ? "normal" : LEVELS[0];
   const LEVEL_LABEL = {
     high: "🔥 最緊急",
     normal: "普通",
     low: "不重要",
     work: "💼 工作區",
     daily: "📅 每日清單",
+    report: "📝 日報",
+    stock_high: "📈 股票・緊急",
+    stock: "📈 股票・普通",
+    mall_high: "🛒 商城・緊急",
+    mall: "🛒 商城・普通",
+    other: "📦 其他",
   };
   // 項目上的小下拉用短標籤，才不會把文字空間吃掉
-  const LEVEL_SHORT = { high: "🔥", normal: "普", low: "低", work: "💼", daily: "📅" };
+  const LEVEL_SHORT = {
+    high: "🔥", normal: "普", low: "低", work: "💼", daily: "📅",
+    report: "📝", stock_high: "📈急", stock: "📈普", mall_high: "🛒急", mall: "🛒普", other: "📦",
+  };
 
   // DOM 元素
   const addForm = document.getElementById("addForm");
@@ -23,6 +35,7 @@
   const levelSelect = document.getElementById("levelSelect");
   const itemsLeft = document.getElementById("itemsLeft");
   const themeToggle = document.getElementById("themeToggle");
+  const clearReport = document.getElementById("clearReport");
   const lists = {};
   const counts = {};
   LEVELS.forEach((lv) => {
@@ -104,6 +117,16 @@
     todo.text = trimmed;
     render();
     api("PATCH", `${API}/${id}`, { text: trimmed }).catch(fail);
+  }
+
+  // 一次刪掉某區塊的全部項目（日報寫完用）
+  function clearLevel(level) {
+    const count = todos.filter((t) => t.level === level).length;
+    if (!count) return;
+    if (!confirm(`確定要清空「${LEVEL_LABEL[level]}」的 ${count} 個項目嗎？刪除後無法復原。`)) return;
+    todos = todos.filter((t) => t.level !== level);
+    render();
+    api("DELETE", `${API}?level=${encodeURIComponent(level)}`).catch(fail);
   }
 
   // 搬到指定區塊；beforeId 有值時插在該項目之前，否則放到最後
@@ -217,8 +240,11 @@
       counts[lv].textContent = items.length;
     });
 
-    const dailyCount = todos.filter((t) => t.level === "daily").length;
-    itemsLeft.textContent = `共 ${todos.length - dailyCount} 項待辦`;
+    if (clearReport) clearReport.disabled = !todos.some((t) => t.level === "report");
+
+    // 只算本頁的區塊；每日清單是例行事項，不算進待辦數
+    const pending = todos.filter((t) => LEVELS.includes(t.level) && t.level !== "daily").length;
+    itemsLeft.textContent = `共 ${pending} 項待辦`;
   }
 
   // ── 拖放 ──────────────────────────
@@ -266,6 +292,8 @@
     todoInput.value = "";
     todoInput.focus();
   });
+
+  if (clearReport) clearReport.addEventListener("click", () => clearLevel("report"));
 
   themeToggle.addEventListener("click", () => {
     const current = document.documentElement.dataset.theme === "dark" ? "light" : "dark";

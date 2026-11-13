@@ -20,7 +20,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class TodoController {
 
-    private static final Set<String> LEVELS = Set.of("high", "normal", "low", "work", "daily");
+    private static final Set<String> LEVELS = Set.of(
+            "high", "normal", "low", "work", "daily", "report", "stock", "stock_high", "mall", "mall_high", "other");
     private static final String DEFAULT_LEVEL = "normal";
 
     private final TodoMapper todoMapper;
@@ -59,6 +60,15 @@ public class TodoController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         todoMapper.deleteById(id);
+    }
+
+    /** 一鍵清空某個區塊（例如日報寫完後清掉） */
+    @DeleteMapping(params = "level")
+    public void clearLevel(@RequestParam String level) {
+        if (!LEVELS.contains(level)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "區塊不正確");
+        }
+        todoMapper.delete(new LambdaQueryWrapper<Todo>().eq(Todo::getLevel, level));
     }
 
     /** 拖曳搬移後，前端送上完整順序；依陣列索引重寫 sort_order 與 level */

@@ -14,7 +14,7 @@ public class Todo {
     @TableId(type = IdType.AUTO)
     private Long id;
     private String text;
-    /** 區塊：high / normal / low / work / daily */
+    /** 區塊：high / normal / low / work / daily / report / stock / stock_high / mall / mall_high / other */
     private String level;
     /** 排序（越小越前面），跨區塊共用一個序列 */
     private Integer sortOrder;

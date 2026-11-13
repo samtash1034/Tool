@@ -17,6 +17,11 @@ public class PageController {
         return "todo";
     }
 
+    @GetMapping("/work-todo")
+    public String workTodo() {
+        return "work-todo";
+    }
+
     @GetMapping("/notepad")
     public String notepad() {
         return "notepad";

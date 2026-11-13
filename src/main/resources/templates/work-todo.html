@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>工作待辦</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💼</text></svg>">
+  <link rel="stylesheet" th:href="@{/todo/style.css}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" th:href="@{/}" title="回工具首頁">💼 工作待辦</a>
+      <span class="tagline">日報、商城、股票、其他工作項目</span>
+      <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel">
+      <form id="addForm" class="add-form">
+        <input type="text" id="todoInput" class="todo-input" placeholder="輸入待辦事項後按 Enter 新增…" maxlength="200" autocomplete="off">
+        <select id="levelSelect" class="level-select" title="選擇區塊">
+          <option value="report" selected>📝 日報</option>
+          <option value="mall_high">🛒 商城・緊急</option>
+          <option value="mall">🛒 商城・普通</option>
+          <option value="stock_high">📈 股票・緊急</option>
+          <option value="stock">📈 股票・普通</option>
+          <option value="other">📦 其他</option>
+        </select>
+        <button type="submit" class="btn btn-primary">＋ 新增</button>
+      </form>
+
+      <div class="filters">
+        <span class="filter-label">整列任一處都可拖曳搬移區塊 · 雙擊文字可編輯 · ✕ 刪除</span>
+      </div>
+
+      <div class="board">
+        <div class="column report biz" data-level="report">
+          <div class="column-head">
+            <span class="column-title">📝 日報</span>
+            <div class="column-actions">
+              <button type="button" id="clearReport" class="clear-btn" title="刪除日報裡的所有項目">🗑 一鍵清空</button>
+              <span class="column-count" data-count="report">0</span>
+            </div>
+          </div>
+          <p class="column-desc">日報要寫的內容，寫完可一鍵清空</p>
+          <ul class="todo-list" data-list="report"></ul>
+        </div>
+
+        <section class="biz-group mall" aria-labelledby="mallTitle">
+          <h2 id="mallTitle" class="column-title">🛒 商城</h2>
+          <div class="priority-board">
+            <div class="column high" data-level="mall_high">
+              <div class="column-head">
+                <span class="column-title">🔥 緊急</span>
+                <span class="column-count" data-count="mall_high">0</span>
+              </div>
+              <ul class="todo-list" data-list="mall_high"></ul>
+            </div>
+            <div class="column mall" data-level="mall">
+              <div class="column-head">
+                <span class="column-title">普通</span>
+                <span class="column-count" data-count="mall">0</span>
+              </div>
+              <ul class="todo-list" data-list="mall"></ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="biz-group stock" aria-labelledby="stockTitle">
+          <h2 id="stockTitle" class="column-title">📈 股票</h2>
+          <div class="priority-board">
+            <div class="column high" data-level="stock_high">
+              <div class="column-head">
+                <span class="column-title">🔥 緊急</span>
+                <span class="column-count" data-count="stock_high">0</span>
+              </div>
+              <ul class="todo-list" data-list="stock_high"></ul>
+            </div>
+            <div class="column stock" data-level="stock">
+              <div class="column-head">
+                <span class="column-title">普通</span>
+                <span class="column-count" data-count="stock">0</span>
+              </div>
+              <ul class="todo-list" data-list="stock"></ul>
+            </div>
+          </div>
+        </section>
+
+        <div class="column other biz" data-level="other">
+          <div class="column-head">
+            <span class="column-title">📦 其他</span>
+            <span class="column-count" data-count="other">0</span>
+          </div>
+          <p class="column-desc">其他工作待辦</p>
+          <ul class="todo-list" data-list="other"></ul>
+        </div>
+      </div>
+
+      <div class="panel-footer">
+        <span id="itemsLeft">尚有 0 項待辦</span>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>資料儲存於伺服器資料庫，換裝置也能看到同一份內容。</p>
+  </footer>
+
+  <script th:src="@{/todo/script.js}"></script>
+</body>
+</html>

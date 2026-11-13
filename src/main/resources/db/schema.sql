@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS todo (
     id         BIGINT AUTO_INCREMENT PRIMARY KEY,
     text       VARCHAR(500) NOT NULL,
-    level      VARCHAR(16)  NOT NULL DEFAULT 'normal' COMMENT 'high / normal / low / work / daily',
+    level      VARCHAR(16)  NOT NULL DEFAULT 'normal' COMMENT 'high / normal / low / work / daily / report / stock / stock_high / mall / mall_high / other',
     sort_order INT          NOT NULL DEFAULT 0 COMMENT '越小越前面',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_todo_sort (sort_order)

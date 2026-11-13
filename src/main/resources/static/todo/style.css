@@ -17,6 +17,9 @@
   --low: #78849a;
   --work: #2e7d32;
   --daily: #ef6c00;
+  --report: #7b1fa2;
+  --stock: #00838f;
+  --mall: #c2185b;
   --col-tint: 8%;
 }
 
@@ -36,6 +39,9 @@
   --low: #9aa5b5;
   --work: #66bb6a;
   --daily: #ffa726;
+  --report: #ba68c8;
+  --stock: #4dd0e1;
+  --mall: #f06292;
   --col-tint: 14%;
 }
 
@@ -190,6 +196,10 @@ body {
 .column.low { --c: var(--low); }
 .column.work { --c: var(--work); }
 .column.daily { --c: var(--daily); }
+.column.report { --c: var(--report); }
+.column.stock { --c: var(--stock); }
+.column.mall { --c: var(--mall); }
+.column.other { --c: var(--low); }
 
 /* 工作區不分等級，橫跨整排放在三區下方 */
 .column.work {
@@ -201,6 +211,31 @@ body {
 .column.daily {
   grid-column: 1 / -1;
   min-height: 0;
+}
+
+.column.biz {
+  grid-column: 1 / -1;
+  min-height: 300px;
+}
+
+.biz-group {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 12px;
+}
+
+.biz-group.stock { --c: var(--stock); }
+.biz-group.mall { --c: var(--mall); }
+
+.priority-board {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 12px;
+}
+
+.priority-board .column {
+  min-height: 300px;
 }
 
 .column.drag-over {
@@ -218,6 +253,35 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: var(--c);
+}
+
+.column-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.clear-btn {
+  font-size: 12px;
+  font-family: inherit;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.clear-btn:hover:not(:disabled) {
+  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+.clear-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .column-count {
@@ -400,11 +464,15 @@ body {
     flex: 1;
   }
 
-  .board {
+  .board,
+  .priority-board {
     grid-template-columns: 1fr;
   }
 
-  .column {
+  .column,
+  .column.work,
+  .priority-board .column,
+  .column.biz {
     min-height: 0;
   }
 }
