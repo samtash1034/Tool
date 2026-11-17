@@ -165,11 +165,28 @@
           if (focused) focused.focus();
         }
       }
+      flashCopyButton("copied", "已複製");
     } catch (err) {
       console.error(err);
+      flashCopyButton("failed", "複製失敗");
       copyReportStatus.textContent = "複製失敗，請確認瀏覽器的剪貼簿權限後重試。";
       copyReportStatus.hidden = false;
     }
+  }
+
+  // 按鈕本身短暫變成「已複製 / 複製失敗」，給點擊回饋
+  let copyFlashTimer = null;
+  function flashCopyButton(state, label) {
+    const labelEl = copyReport.querySelector(".copy-label");
+    copyReport.classList.remove("copied", "failed");
+    void copyReport.offsetWidth; // 重新觸發動畫
+    copyReport.classList.add(state);
+    if (labelEl) labelEl.textContent = label;
+    clearTimeout(copyFlashTimer);
+    copyFlashTimer = setTimeout(() => {
+      copyReport.classList.remove("copied", "failed");
+      if (labelEl) labelEl.textContent = "複製";
+    }, 1500);
   }
 
   // 搬到指定區塊；beforeId 有值時插在該項目之前，否則放到最後
