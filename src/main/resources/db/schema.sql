@@ -16,3 +16,18 @@ CREATE TABLE IF NOT EXISTS note (
     updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_note_updated (updated_at)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '記事本';
+
+CREATE TABLE IF NOT EXISTS health_log (
+    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
+    log_date         DATE         NOT NULL COMMENT '紀錄日期，一天一筆',
+    pain_level       TINYINT      NULL COMMENT '疼痛程度 0~10，NULL = 未填',
+    mobility         TINYINT      NULL COMMENT '活動度 0~10（10 = 完全正常），NULL = 未填',
+    visit            VARCHAR(50)  NOT NULL DEFAULT '' COMMENT '就診：物理治療 / 骨科 / 復健…',
+    exercise         VARCHAR(500) NOT NULL DEFAULT '' COMMENT '復健運動內容',
+    exercise_minutes INT          NOT NULL DEFAULT 0 COMMENT '運動分鐘數',
+    treatment        VARCHAR(500) NOT NULL DEFAULT '' COMMENT '治療 / 用藥：吃藥、打針、紅外線…',
+    note             TEXT         NOT NULL COMMENT '每日心得',
+    created_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_health_log_date (log_date)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = '關節復健日誌';

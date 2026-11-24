@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>關節復健日誌</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🩺</text></svg>">
+  <link rel="stylesheet" th:href="@{/health/style.css}">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo" th:href="@{/}" title="回工具首頁">🩺 關節復健日誌</a>
+      <span class="tagline">每天的就診、復健運動與心得</span>
+      <button id="themeToggle" class="btn btn-ghost" title="切換深色模式">🌙</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <!-- 紀錄表單 -->
+    <section class="card">
+      <div class="card-head">
+        <h2 id="formTitle">今天的紀錄</h2>
+        <input type="date" id="logDate" class="input date-input">
+      </div>
+
+      <div class="form-grid">
+        <label class="field">
+          <span class="field-label">就診</span>
+          <input type="text" id="visit" class="input" maxlength="50" list="visitOptions" placeholder="無">
+          <datalist id="visitOptions">
+            <option value="物理治療"></option>
+            <option value="骨科"></option>
+            <option value="復健"></option>
+          </datalist>
+        </label>
+        <label class="field">
+          <span class="field-label">復健運動</span>
+          <input type="text" id="exercise" class="input" maxlength="500" placeholder="例如：按摩球壓側邊&amp;骨盆運動">
+        </label>
+        <label class="field">
+          <span class="field-label">治療 / 用藥</span>
+          <input type="text" id="treatment" class="input" maxlength="500" placeholder="例如：吃藥、打針、紅外線">
+        </label>
+      </div>
+
+      <label class="field">
+        <span class="field-label">心得</span>
+        <textarea id="note" class="input" rows="3" placeholder="今天的感覺、睡眠、哪些動作會不舒服…"></textarea>
+      </label>
+
+      <div class="actions">
+        <span id="saveStatus" class="status"></span>
+        <button id="newBtn" class="btn btn-ghost">回到今天</button>
+        <button id="saveBtn" class="btn btn-primary">💾 儲存</button>
+      </div>
+    </section>
+
+    <!-- 日記表格 -->
+    <section class="card">
+      <div class="card-head">
+        <h2>日記</h2>
+        <span id="logCount" class="muted"></span>
+      </div>
+      <div class="table-wrap">
+        <table class="log-table">
+          <thead>
+            <tr>
+              <th class="col-date">日期</th>
+              <th class="col-visit">就診</th>
+              <th>復健運動</th>
+              <th>治療 / 用藥</th>
+              <th>心得</th>
+              <th class="col-act"></th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+      <p class="hint">點一列即可在上方編輯。</p>
+    </section>
+  </main>
+
+  <script th:src="@{/health/script.js}"></script>
+</body>
+</html>

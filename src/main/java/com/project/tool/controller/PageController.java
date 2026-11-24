@@ -31,4 +31,9 @@ public class PageController {
     public String pomodoro() {
         return "pomodoro";
     }
+
+    @GetMapping("/health")
+    public String health() {
+        return "health";
+    }
 }
